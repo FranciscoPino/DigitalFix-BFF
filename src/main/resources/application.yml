@@ -1,0 +1,20 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  application:
+    name: ms-digitalfix-bff
+server:
+  port: ${SERVER_PORT:8080}
+app:
+  security:
+    enabled: ${SECURITY_ENABLED:false}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}
+  azure:
+    issuer-uri: ${AZURE_ISSUER_URI:https://login.microsoftonline.com/common/v2.0}
+    audience: ${AZURE_API_AUDIENCE:api://digitalfix-api-client-id}
+  services:
+    workorders-url: ${WORKORDERS_SERVICE_URL:http://localhost:8081}
+    catalog-url: ${CATALOG_SERVICE_URL:http://localhost:8082}
+    report-url: ${REPORT_SERVICE_URL:http://localhost:8084}
+    audit-url: ${AUDIT_SERVICE_URL:http://localhost:8085}
