@@ -21,10 +21,14 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
+    private static final Pattern AZURE_V1_ISSUER = Pattern.compile("^https://sts\\.windows\\.net/([0-9a-fA-F-]+)/?$", Pattern.CASE_INSENSITIVE);
+
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity http,
                                             @Value("${app.security.enabled:false}") boolean securityEnabled,
@@ -72,7 +76,15 @@ public class SecurityConfig {
     @ConditionalOnProperty(prefix = "app.security", name = "enabled", havingValue = "true")
     JwtDecoder jwtDecoder(@Value("${app.azure.issuer-uri}") String issuer,
                           @Value("${app.azure.audience}") String audience) {
-        NimbusJwtDecoder decoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(issuer);
+        NimbusJwtDecoder decoder;
+        Matcher v1Issuer = AZURE_V1_ISSUER.matcher(issuer);
+        if (v1Issuer.matches()) {
+            String tenantId = v1Issuer.group(1);
+            String jwkSetUri = "https://login.microsoftonline.com/" + tenantId + "/discovery/keys";
+            decoder = NimbusJwtDecoder.withJwkSetUri(jwkSetUri).build();
+        } else {
+            decoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(issuer);
+        }
         OAuth2TokenValidator<Jwt> issuerValidator = JwtValidators.createDefaultWithIssuer(issuer);
         decoder.setJwtValidator(new DelegatingOAuth2TokenValidator<>(issuerValidator, new JwtAudienceValidator(audience)));
         return decoder;

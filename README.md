@@ -51,7 +51,7 @@ El proyecto importa `.env` desde el directorio del repositorio. Completa Tenant/
 ```env
 SERVER_PORT=8080
 SECURITY_ENABLED=true
-AZURE_ISSUER_URI=https://login.microsoftonline.com/<TENANT_ID>/v2.0
+AZURE_ISSUER_URI=https://sts.windows.net/<TENANT_ID>/
 AZURE_API_AUDIENCE=api://<API_CLIENT_ID>
 CORS_ALLOWED_ORIGINS=http://localhost:5173
 WORKORDERS_SERVICE_URL=http://localhost:8081
@@ -61,6 +61,7 @@ AUDIT_SERVICE_URL=http://localhost:8085
 ```
 
 Para desarrollo aislado se puede usar `SECURITY_ENABLED=false`; no uses ese modo en producción.
+El BFF admite issuer v2 (`login.microsoftonline.com/<tenant>/v2.0`) e issuer v1 (`sts.windows.net/<tenant>/`). Si los tokens de Entra traen `iss=https://sts.windows.net/.../`, configura el mismo valor exacto en el JWT Authorizer de API Gateway y en el secret `AZURE_ISSUER_URI`; el BFF obtiene las claves v1 desde el endpoint JWKS del tenant.
 
 ## Ejecutar y probar
 
