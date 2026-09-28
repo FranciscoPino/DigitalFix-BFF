@@ -5,6 +5,7 @@ spring:
     name: ms-digitalfix-bff
 server:
   port: ${SERVER_PORT:8080}
+  forward-headers-strategy: framework
 app:
   security:
     enabled: ${SECURITY_ENABLED:false}

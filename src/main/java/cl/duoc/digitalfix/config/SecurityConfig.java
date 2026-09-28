@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource));
         if (securityEnabled) {
             http.authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/actuator/health", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+                    .requestMatchers("/actuator/health", "/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/v3/api-docs.yaml").permitAll()
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers("/api/report/**").hasAuthority("ROLE_Admin")
                     .requestMatchers("/api/audit/**").hasAnyAuthority("ROLE_Admin", "ROLE_Auditor")
