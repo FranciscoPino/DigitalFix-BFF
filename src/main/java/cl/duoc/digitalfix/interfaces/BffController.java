@@ -72,6 +72,14 @@ public class BffController {
         return forward(HttpMethod.PUT, workordersUrl + "/api/workorders/" + id + "/status", null, body, headers);
     }
 
+    // Solo demostración: provoca un mensaje inválido que termina en la DLQ de notify
+    @PostMapping("/workorders/demo/dlq")
+    public ResponseEntity<JsonNode> demoDlq(
+            @RequestParam MultiValueMap<String, String> queryParams,
+            @RequestHeader HttpHeaders headers) {
+        return forward(HttpMethod.POST, workordersUrl + "/api/workorders/demo/dlq", queryParams, null, headers);
+    }
+
     @GetMapping("/catalog/services")
     public ResponseEntity<JsonNode> listServices(@RequestHeader HttpHeaders headers) {
         return forward(HttpMethod.GET, catalogUrl + "/api/catalog/services", null, null, headers);
