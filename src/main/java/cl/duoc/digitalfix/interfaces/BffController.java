@@ -2,6 +2,7 @@ package cl.duoc.digitalfix.interfaces;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.web.util.UriUtils;
 
 @RestController
 @RequestMapping("/api")
@@ -165,7 +167,9 @@ public class BffController {
     private URI buildUri(String baseUrl, MultiValueMap<String, String> queryParams) {
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(baseUrl);
         if (queryParams != null) {
-            queryParams.forEach((key, values) -> values.forEach(value -> builder.queryParam(key, value)));
+            queryParams.forEach((key, values) -> values.forEach(value ->
+                    builder.queryParam(UriUtils.encode(key, StandardCharsets.UTF_8),
+                            value == null ? null : UriUtils.encode(value, StandardCharsets.UTF_8))));
         }
         return builder.build(true).toUri();
     }
